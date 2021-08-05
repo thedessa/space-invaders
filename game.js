@@ -13,17 +13,14 @@ var config = {
 var spaceInvaders = new Phaser.Game(config);
 
 function preload() {
-    // load images and audio
     this.load.image('starfield', 'assets/starfield.png');
 }
 
-
+// create scenes, characters, text
 function create() {
-    this.add.image(400, 300, 'starfield');
-    // create scenes, characters, text
+    this.starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
 }
 
-
 function update() {
-    // update game elements
+    this.starfield.tilePositionX += 2;
 }
