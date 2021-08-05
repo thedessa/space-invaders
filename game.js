@@ -14,10 +14,12 @@ var spaceInvaders = new Phaser.Game(config);
 
 function preload() {
     // load images and audio
+    this.load.image('starfield', 'assets/starfield.png');
 }
 
 
 function create() {
+    this.add.image(400, 300, 'starfield');
     // create scenes, characters, text
 }
 
