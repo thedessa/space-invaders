@@ -40,6 +40,7 @@ class GameScreen extends Phaser.Scene {
             frameHeight: 200
         });
         this.load.image('alien', 'assets/alien.png');
+        this.load.image('alien-green', 'assets/alien-green.png');
     }
 
     create() {
@@ -57,7 +58,8 @@ class GameScreen extends Phaser.Scene {
         aliens = this.add.group();
         for (let y = 2; y < 6; y++) {
             for (let x = 3; x < 13; x++) {
-                aliens.create(x * 50, y * 50, 'alien');
+                let alienType = x % 2 == 0 ? 'alien' : 'alien-green';
+                aliens.create(x * 50, y * 50, alienType);
             }
         }
     }
