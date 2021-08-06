@@ -27,6 +27,9 @@ class StartScreen extends Phaser.Scene {
     }
 }
 
+var cursors;
+var player;
+
 class GameScreen extends Phaser.Scene {
 
     constructor() {
@@ -35,20 +38,33 @@ class GameScreen extends Phaser.Scene {
 
     preload() {
         this.load.image('starfield', 'assets/starfield.png');
-        this.load.image('alien', 'assets/alien.png');
+        this.load.spritesheet('player', 'assets/spaceship.png', {
+            frameWidth: 200,
+            frameHeight: 200
+          })
     }
 
     create() {
         this.starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
-        this.alien = this.add.image(400, 300, "alien");
+
+        cursors = this.input.keyboard.createCursorKeys();
+        player = this.physics.add.sprite(380, 500, "player")
+        player.body.collideWorldBounds = true;
     }
 
     update() {
         // move the starfield to the left
         this.starfield.tilePositionX += 2;
+
+        if (cursors.left.isDown) {
+            player.setVelocityX(-200)
+          } else if (cursors.right.isDown) {
+            player.setVelocityX(200)
+          } else {
+            player.setVelocityX(0)
+          }
     }
 }
-
 
 class GameOverScreen extends Phaser.Scene {
 
@@ -57,13 +73,16 @@ class GameOverScreen extends Phaser.Scene {
     }
 
     preload() {
+    
     }
 
     create() {
         this.add.text(350, 300, 'game over');
+    
     }
 
     update() {
+
     }
 }
 
