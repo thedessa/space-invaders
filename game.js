@@ -16,7 +16,7 @@ class StartScreen extends Phaser.Scene {
 
         var gameOver = this.add.text(350, 550, 'start game');
         gameOver.setInteractive().on('pointerdown', function () {
-            // when clicking "game over" text, change the scene
+            // when clicking "start game" text, change the scene
             this.scene.scene.start('GameScreen');
         });
     }
@@ -27,8 +27,9 @@ class StartScreen extends Phaser.Scene {
     }
 }
 
-var cursors;
+var cursor;
 var player;
+var aliens;
 
 class GameScreen extends Phaser.Scene {
 
@@ -41,28 +42,36 @@ class GameScreen extends Phaser.Scene {
         this.load.spritesheet('player', 'assets/spaceship.png', {
             frameWidth: 200,
             frameHeight: 200
-          })
+        });
+        this.load.image('alien', 'assets/alien.png');
     }
 
     create() {
         this.starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
 
-        cursors = this.input.keyboard.createCursorKeys();
+        cursor = this.input.keyboard.createCursorKeys();
         player = this.physics.add.sprite(380, 500, "player")
         player.body.collideWorldBounds = true;
+
+        aliens = this.add.group();
+        for (var y = 2; y < 6; y++) {
+            for (var x = 3; x < 13; x++) {
+                var alien = aliens.create(x * 50, y * 50, 'alien');
+            }
+        }
     }
 
     update() {
         // move the starfield to the left
         this.starfield.tilePositionX += 2;
 
-        if (cursors.left.isDown) {
+        if (cursor.left.isDown) {
             player.setVelocityX(-200)
-          } else if (cursors.right.isDown) {
+        } else if (cursor.right.isDown) {
             player.setVelocityX(200)
-          } else {
+        } else {
             player.setVelocityX(0)
-          }
+        }
     }
 }
 
@@ -73,12 +82,12 @@ class GameOverScreen extends Phaser.Scene {
     }
 
     preload() {
-    
+
     }
 
     create() {
         this.add.text(350, 300, 'game over');
-    
+
     }
 
     update() {
