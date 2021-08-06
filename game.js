@@ -76,6 +76,11 @@ class GameScreen extends Phaser.Scene {
         } else {
             player.setVelocityX(0)
         }
+
+        // player can move the ship with mouse
+        this.input.on('pointermove', (pointer) => {
+            player.x = pointer.x;
+        });
     }
 }
 
