@@ -11,10 +11,10 @@ class StartScreen extends Phaser.Scene {
 
     create() {
 
-        this.starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
-        this.logo = this.add.image(400, 300, "logo");
+        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+        this.add.image(400, 300, "logo");
 
-        var gameOver = this.add.text(350, 550, 'start game');
+        let gameOver = this.add.text(350, 550, 'start game');
         gameOver.setInteractive().on('pointerdown', function () {
             // when clicking "start game" text, change the scene
             this.scene.scene.start('GameScreen');
@@ -23,13 +23,9 @@ class StartScreen extends Phaser.Scene {
 
     update() {
         // move the starfield to the left
-        this.starfield.tilePositionX += 2;
+        starfield.tilePositionX += 2;
     }
 }
-
-var cursor;
-var player;
-var aliens;
 
 class GameScreen extends Phaser.Scene {
 
@@ -47,24 +43,30 @@ class GameScreen extends Phaser.Scene {
     }
 
     create() {
-        this.starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
 
+        // add starfield
+        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+
+        // add cursor to track player actions
         cursor = this.input.keyboard.createCursorKeys();
+
+        // add player (spaceship) to scene
         player = this.physics.add.sprite(380, 500, "player")
         player.body.collideWorldBounds = true;
-
+        
         aliens = this.add.group();
-        for (var y = 2; y < 6; y++) {
-            for (var x = 3; x < 13; x++) {
-                var alien = aliens.create(x * 50, y * 50, 'alien');
+        for (let y = 2; y < 6; y++) {
+            for (let x = 3; x < 13; x++) {
+                aliens.create(x * 50, y * 50, 'alien');
             }
         }
     }
 
     update() {
         // move the starfield to the left
-        this.starfield.tilePositionX += 2;
+        starfield.tilePositionX += 2;
 
+        // player can move to the left and to the right
         if (cursor.left.isDown) {
             player.setVelocityX(-200)
         } else if (cursor.right.isDown) {
@@ -95,7 +97,7 @@ class GameOverScreen extends Phaser.Scene {
     }
 }
 
-var config = {
+let config = {
     type: Phaser.AUTO, // render mode
     parent: "game", // div id
     width: 800,
@@ -107,3 +109,8 @@ var config = {
 };
 
 var spaceInvaders = new Phaser.Game(config);
+
+var starfield;
+var cursor;
+var player;
+var aliens;
