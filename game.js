@@ -16,8 +16,8 @@ class StartScreen extends Phaser.Scene {
 
         var gameOver = this.add.text(350, 550, 'start game');
         gameOver.setInteractive().on('pointerdown', function () {
-            // when clicking game over text, change the scene
-            this.scene.scene.start('GameOverScreen');
+            // when clicking "game over" text, change the scene
+            this.scene.scene.start('GameScreen');
         });
     }
 
@@ -26,6 +26,29 @@ class StartScreen extends Phaser.Scene {
         this.starfield.tilePositionX += 2;
     }
 }
+
+class GameScreen extends Phaser.Scene {
+
+    constructor() {
+        super('GameScreen');
+    }
+
+    preload() {
+        this.load.image('starfield', 'assets/starfield.png');
+        this.load.image('alien', 'assets/alien.png');
+    }
+
+    create() {
+        this.starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+        this.alien = this.add.image(400, 300, "alien");
+    }
+
+    update() {
+        // move the starfield to the left
+        this.starfield.tilePositionX += 2;
+    }
+}
+
 
 class GameOverScreen extends Phaser.Scene {
 
@@ -49,7 +72,7 @@ var config = {
     parent: "game", // div id
     width: 800,
     height: 600,
-    scene: [StartScreen, GameOverScreen],
+    scene: [StartScreen, GameScreen, GameOverScreen],
     physics: {
         default: 'arcade'
     }
