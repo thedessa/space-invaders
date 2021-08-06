@@ -35,12 +35,10 @@ class GameScreen extends Phaser.Scene {
 
     preload() {
         this.load.image('starfield', 'assets/starfield.png');
-        this.load.spritesheet('player', 'assets/spaceship.png', {
-            frameWidth: 200,
-            frameHeight: 200
-        });
+        this.load.image('player', 'assets/spaceship.png');
         this.load.image('alien', 'assets/alien.png');
         this.load.image('alien-green', 'assets/alien-green.png');
+        this.load.image("bullet", "assets/bullet.png");
     }
 
     create() {
@@ -54,14 +52,19 @@ class GameScreen extends Phaser.Scene {
         // add player (spaceship) to scene
         player = this.physics.add.sprite(380, 500, "player")
         player.body.collideWorldBounds = true;
-        
-        aliens = this.add.group();
+
+        aliens = this.physics.add.group();
         for (let y = 2; y < 6; y++) {
             for (let x = 3; x < 13; x++) {
                 let alienType = x % 2 == 0 ? 'alien' : 'alien-green';
                 aliens.create(x * 50, y * 50, alienType);
             }
         }
+
+        bullets = this.physics.add.group({
+            defaultKey: 'bullet',
+            maxSize: 100
+        });
     }
 
     update() {
@@ -81,8 +84,30 @@ class GameScreen extends Phaser.Scene {
         this.input.on('pointermove', (pointer) => {
             player.x = pointer.x;
         });
+
+        // when clicking, shoot
+        this.input.on('pointerdown', this.shoot, this);
+
+        // "reborn" bullets
+        bullets.children.each(function (b) {
+            if (b.active) {
+                if (b.y < 0) {
+                    b.setActive(false);
+                }
+            }
+        }.bind(this));
+    }
+
+    shoot() {
+        var bullet = bullets.get(player.x, player.y);
+        if (bullet) {
+            bullet.setActive(true);
+            bullet.setVisible(true);
+            bullet.body.velocity.y = -200;
+        }
     }
 }
+
 
 class GameOverScreen extends Phaser.Scene {
 
@@ -121,3 +146,4 @@ var starfield;
 var cursor;
 var player;
 var aliens;
+var bullets;
