@@ -65,6 +65,16 @@ class GameScreen extends Phaser.Scene {
             defaultKey: 'bullet',
             maxSize: 100
         });
+
+        this.physics.add.overlap(
+            aliens,
+            bullets,
+            function (alien, bullet)
+            {
+                // erase alien and bullet
+                alien.destroy();
+                bullet.destroy();
+            });
     }
 
     update() {
@@ -103,7 +113,7 @@ class GameScreen extends Phaser.Scene {
         if (bullet) {
             bullet.setActive(true);
             bullet.setVisible(true);
-            bullet.body.velocity.y = -200;
+            bullet.body.velocity.y = -400;
         }
     }
 }
