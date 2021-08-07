@@ -63,7 +63,9 @@ class GameScreen extends Phaser.Scene {
             }
         }
 
-        bullets = this.physics.add.group({
+        scoreText = this.add.text(10, 10, score + playerScore);
+
+        playerBullets = this.physics.add.group({
             defaultKey: 'bullet',
             maxSize: 100
         });
@@ -77,17 +79,14 @@ class GameScreen extends Phaser.Scene {
             defaultKey: 'enemyBulletLeft',
             maxSize: 1000
         });
-        
-        scoreText = this.add.text(10, 10, scoreString + score);
 
         this.physics.add.overlap(
             aliens,
-            bullets,
-            function (alien, bullet)
-            {
+            playerBullets,
+            function (alien, bullet) {
                 if (alien.active && bullet.active) {
-                    score += 10;
-                    scoreText.text = scoreString + score;
+                    playerScore += 10;
+                    scoreText.text = score + playerScore;
                 }
 
                 alien.destroy();
@@ -116,12 +115,13 @@ class GameScreen extends Phaser.Scene {
         // when clicking, shoot
         this.input.on('pointerdown', this.playerShoot, this);
 
-        if  (Phaser.Math.Between(1, 100) > 98) {
-            enemiesShoot();
+        // 2% chance of shooting an enemy bullet
+        if (Phaser.Math.Between(1, 100) > 98) {
+            this.enemiesShoot();
         }
 
-        // "reborn" bullets
-        bullets.children.each(function (b) {
+        // "reborn" player bullets
+        playerBullets.children.each(function (b) {
             if (b.active) {
                 if (b.y < 0) {
                     b.setActive(false);
@@ -131,34 +131,34 @@ class GameScreen extends Phaser.Scene {
     }
 
     playerShoot() {
-        let bullet = bullets.get(player.x, player.y);
+        let bullet = playerBullets.get(player.x, player.y);
         if (bullet) {
             bullet.setActive(true);
             bullet.setVisible(true);
             bullet.body.velocity.y = -400;
         }
     }
-}
-function enemiesShoot() {
-    let xAxis = Phaser.Math.Between(0, 800);
-    let enemyBullets = enemyBulletsLeftDirection;
-    if(xAxis <= 400) {
-        enemyBullets = enemyBulletsRightDirection;
+
+    enemiesShoot() {
+        let xAxis = Phaser.Math.Between(0, 800);
+        let enemyBullets = enemyBulletsLeftDirection;
+        if (xAxis <= 400) {
+            enemyBullets = enemyBulletsRightDirection;
+        }
+
+        let enemyBullet = enemyBullets.get(Phaser.Math.Between(200, 600), 0);
+        if (enemyBullet) {
+            enemyBullet.setActive(true);
+            enemyBullet.setVisible(true);
+
+            if (xAxis <= 400) {
+                enemyBullet.setVelocity(Phaser.Math.Between(50, 100), Phaser.Math.Between(200, 300));
+            } else {
+                enemyBullet.setVelocity(Phaser.Math.Between(-100, -50), Phaser.Math.Between(200, 300));
+            }
+        }
     }
-
-    let enemyBullet = enemyBullets.get(Phaser.Math.Between(200, 600), 0);
-    if (enemyBullet) {
-        enemyBullet.setActive(true);
-        enemyBullet.setVisible(true);
-
-    if(xAxis <= 400) {
-        enemyBullet.setVelocity(Phaser.Math.Between(50, 100), Phaser.Math.Between(200, 300));
-    } else {
-        enemyBullet.setVelocity(Phaser.Math.Between(-100, -50), Phaser.Math.Between(200, 300));
-    }
 }
-}
-
 
 class GameOverScreen extends Phaser.Scene {
 
@@ -191,15 +191,15 @@ let config = {
     }
 };
 
-var spaceInvaders = new Phaser.Game(config);
+let spaceInvaders = new Phaser.Game(config);
 
-const scoreString = 'Score : ';
-var starfield;
-var cursor;
-var player;
-var aliens;
-var bullets;
-var scoreText;
-var score = 0;
-var enemyBulletsRightDirection;
-var enemyBulletsLeftDirection;
+const score = 'Score : ';
+let starfield;
+let cursor;
+let player;
+let aliens;
+let playerBullets;
+let scoreText;
+let playerScore = 0;
+let enemyBulletsRightDirection;
+let enemyBulletsLeftDirection;
