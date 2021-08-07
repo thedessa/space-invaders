@@ -14,8 +14,8 @@ class StartScreen extends Phaser.Scene {
         starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
         this.add.image(400, 300, "logo");
 
-        let gameOver = this.add.text(350, 550, 'start game');
-        gameOver.setInteractive().on('pointerdown', function () {
+        let startGame = this.add.text(350, 550, 'start game');
+        startGame.setInteractive().on('pointerdown', function () {
             // when clicking "start game" text, change the scene
             this.scene.scene.start('GameScreen');
         });
@@ -41,6 +41,9 @@ class GameScreen extends Phaser.Scene {
         this.load.image("bullet", "assets/bullet.png");
         this.load.image("enemyBulletRight", "assets/enemy-bullet-right.png");
         this.load.image("enemyBulletLeft", "assets/enemy-bullet-left.png");
+        this.load.image('blast0', '/assets/blast0.png');
+        this.load.image('blast1', '/assets/blast1.png');
+        this.load.image('blast2', '/assets/blast2.png');
     }
 
     create() {
@@ -80,6 +83,18 @@ class GameScreen extends Phaser.Scene {
             maxSize: 1000
         });
 
+        this.anims.create({
+            key: 'explosion',
+            frames: [
+                { key: 'blast0' },
+                { key: 'blast1' },
+                { key: 'blast2' },
+                { key: 'player' }
+            ],
+            frameRate: 10,
+            repeat: 1
+        });
+
         this.physics.add.overlap(
             aliens,
             playerBullets,
@@ -92,6 +107,25 @@ class GameScreen extends Phaser.Scene {
                 alien.destroy();
                 bullet.destroy();
             });
+
+        this.physics.add.overlap(
+            player,
+            enemyBulletsRightDirection,
+            this.gameOver,
+            null,
+            this);
+
+        this.physics.add.overlap(
+            player,
+            enemyBulletsLeftDirection,
+            this.gameOver,
+            null,
+            this);
+    }
+
+    gameOver() {
+        this.scene.start('GameOverScreen');
+
     }
 
     update() {
@@ -171,8 +205,12 @@ class GameOverScreen extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(350, 300, 'game over');
-
+        this.add.text(340, 250, 'game over');
+        
+        let tryAgain = this.add.text(300, 300, 'click to try again');
+        tryAgain.setInteractive().on('pointerdown', function () {
+            this.scene.scene.start('GameScreen');
+        });
     }
 
     update() {
@@ -203,3 +241,5 @@ let scoreText;
 let playerScore = 0;
 let enemyBulletsRightDirection;
 let enemyBulletsLeftDirection;
+let gameOver = false;
+let deaths = 0;
