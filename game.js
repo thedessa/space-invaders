@@ -39,7 +39,8 @@ class GameScreen extends Phaser.Scene {
         this.load.image('alien', 'assets/alien.png');
         this.load.image('alien-green', 'assets/alien-green.png');
         this.load.image("bullet", "assets/bullet.png");
-        this.load.image("enemyBullet", "assets/enemy-bullet.png");
+        this.load.image("enemyBulletRight", "assets/enemy-bullet-right.png");
+        this.load.image("enemyBulletLeft", "assets/enemy-bullet-left.png");
     }
 
     create() {
@@ -67,8 +68,13 @@ class GameScreen extends Phaser.Scene {
             maxSize: 100
         });
 
-        enemyBullets = this.physics.add.group({
-            defaultKey: 'enemyBullet',
+        enemyBulletsRightDirection = this.physics.add.group({
+            defaultKey: 'enemyBulletRight',
+            maxSize: 1000
+        });
+
+        enemyBulletsLeftDirection = this.physics.add.group({
+            defaultKey: 'enemyBulletLeft',
             maxSize: 1000
         });
         
@@ -135,15 +141,20 @@ class GameScreen extends Phaser.Scene {
 }
 function enemiesShoot() {
     let xAxis = Phaser.Math.Between(0, 800);
+    let enemyBullets = enemyBulletsLeftDirection;
+    if(xAxis <= 400) {
+        enemyBullets = enemyBulletsRightDirection;
+    }
+
     let enemyBullet = enemyBullets.get(Phaser.Math.Between(200, 600), 0);
     if (enemyBullet) {
         enemyBullet.setActive(true);
         enemyBullet.setVisible(true);
 
-    if(xAxis < 400) {
-        enemyBullet.setVelocity(Phaser.Math.Between(200, 300), Phaser.Math.Between(200, 300));
+    if(xAxis <= 400) {
+        enemyBullet.setVelocity(Phaser.Math.Between(50, 100), Phaser.Math.Between(200, 300));
     } else {
-        enemyBullet.setVelocity(Phaser.Math.Between(-300, -200), Phaser.Math.Between(200, 300));
+        enemyBullet.setVelocity(Phaser.Math.Between(-100, -50), Phaser.Math.Between(200, 300));
     }
 }
 }
@@ -190,4 +201,5 @@ var aliens;
 var bullets;
 var scoreText;
 var score = 0;
-var enemyBullets;
+var enemyBulletsRightDirection;
+var enemyBulletsLeftDirection;
