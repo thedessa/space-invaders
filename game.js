@@ -39,6 +39,7 @@ class GameScreen extends Phaser.Scene {
         this.load.image('alien', 'assets/alien.png');
         this.load.image('alien-green', 'assets/alien-green.png');
         this.load.image("bullet", "assets/bullet.png");
+        this.load.image("enemyBullet", "assets/enemy-bullet.png");
     }
 
     create() {
@@ -65,25 +66,26 @@ class GameScreen extends Phaser.Scene {
             defaultKey: 'bullet',
             maxSize: 100
         });
+
+        enemyBullets = this.physics.add.group({
+            defaultKey: 'enemyBullet',
+            maxSize: 1000
+        });
         
         scoreText = this.add.text(10, 10, scoreString + score);
+
         this.physics.add.overlap(
             aliens,
             bullets,
             function (alien, bullet)
             {
-                // erase alien and bullet
                 if (alien.active && bullet.active) {
-                    alien.destroy();
-                    bullet.destroy();
-    
                     score += 10;
                     scoreText.text = scoreString + score;
                 }
 
                 alien.destroy();
                 bullet.destroy();
-            
             });
     }
 
@@ -106,7 +108,11 @@ class GameScreen extends Phaser.Scene {
         });
 
         // when clicking, shoot
-        this.input.on('pointerdown', this.shoot, this);
+        this.input.on('pointerdown', this.playerShoot, this);
+
+        if  (Phaser.Math.Between(1, 100) > 98) {
+            enemiesShoot();
+        }
 
         // "reborn" bullets
         bullets.children.each(function (b) {
@@ -118,14 +124,28 @@ class GameScreen extends Phaser.Scene {
         }.bind(this));
     }
 
-    shoot() {
-        var bullet = bullets.get(player.x, player.y);
+    playerShoot() {
+        let bullet = bullets.get(player.x, player.y);
         if (bullet) {
             bullet.setActive(true);
             bullet.setVisible(true);
             bullet.body.velocity.y = -400;
         }
     }
+}
+function enemiesShoot() {
+    let xAxis = Phaser.Math.Between(0, 800);
+    let enemyBullet = enemyBullets.get(Phaser.Math.Between(200, 600), 0);
+    if (enemyBullet) {
+        enemyBullet.setActive(true);
+        enemyBullet.setVisible(true);
+
+    if(xAxis < 400) {
+        enemyBullet.setVelocity(Phaser.Math.Between(200, 300), Phaser.Math.Between(200, 300));
+    } else {
+        enemyBullet.setVelocity(Phaser.Math.Between(-300, -200), Phaser.Math.Between(200, 300));
+    }
+}
 }
 
 
@@ -170,3 +190,4 @@ var aliens;
 var bullets;
 var scoreText;
 var score = 0;
+var enemyBullets;
