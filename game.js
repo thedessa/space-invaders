@@ -41,9 +41,6 @@ class GameScreen extends Phaser.Scene {
         this.load.image("bullet", "assets/bullet.png");
         this.load.image("enemyBulletRight", "assets/enemy-bullet-right.png");
         this.load.image("enemyBulletLeft", "assets/enemy-bullet-left.png");
-        this.load.image('blast0', '/assets/blast0.png');
-        this.load.image('blast1', '/assets/blast1.png');
-        this.load.image('blast2', '/assets/blast2.png');
     }
 
     create() {
@@ -81,18 +78,6 @@ class GameScreen extends Phaser.Scene {
         enemyBulletsLeftDirection = this.physics.add.group({
             defaultKey: 'enemyBulletLeft',
             maxSize: 1000
-        });
-
-        this.anims.create({
-            key: 'explosion',
-            frames: [
-                { key: 'blast0' },
-                { key: 'blast1' },
-                { key: 'blast2' },
-                { key: 'player' }
-            ],
-            frameRate: 10,
-            repeat: 1
         });
 
         this.physics.add.overlap(
@@ -207,7 +192,7 @@ class GameOverScreen extends Phaser.Scene {
     create() {
         this.add.text(340, 250, 'game over');
         
-        let tryAgain = this.add.text(300, 300, 'click to try again');
+        let tryAgain = this.add.text(300, 300, 'click here to try again');
         tryAgain.setInteractive().on('pointerdown', function () {
             this.scene.scene.start('GameScreen');
         });
