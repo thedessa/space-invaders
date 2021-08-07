@@ -65,15 +65,25 @@ class GameScreen extends Phaser.Scene {
             defaultKey: 'bullet',
             maxSize: 100
         });
-
+        
+        scoreText = this.add.text(10, 10, scoreString + score);
         this.physics.add.overlap(
             aliens,
             bullets,
             function (alien, bullet)
             {
                 // erase alien and bullet
+                if (alien.active && bullet.active) {
+                    alien.destroy();
+                    bullet.destroy();
+    
+                    score += 10;
+                    scoreText.text = scoreString + score;
+                }
+
                 alien.destroy();
                 bullet.destroy();
+            
             });
     }
 
@@ -152,8 +162,11 @@ let config = {
 
 var spaceInvaders = new Phaser.Game(config);
 
+const scoreString = 'Score : ';
 var starfield;
 var cursor;
 var player;
 var aliens;
 var bullets;
+var scoreText;
+var score = 0;
