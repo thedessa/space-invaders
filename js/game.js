@@ -109,8 +109,8 @@ class GameScreen extends Phaser.Scene {
     }
 
     gameOver() {
+        playerScore = 0;
         this.scene.start('GameOverScreen');
-
     }
 
     update() {
