@@ -59,7 +59,9 @@ class GameScreen extends Phaser.Scene {
         for (let y = 2; y < 6; y++) {
             for (let x = 3; x < 13; x++) {
                 let alienType = x % 2 == 0 ? 'alien' : 'alien-green';
-                aliens.create(x * 50, y * 50, alienType);
+                let alien = aliens.create(x * 50, y * 50, alienType);
+                alien.enableBody = true;
+                alien.body.collideWorldBounds = true;
             }
         }
 
@@ -78,6 +80,19 @@ class GameScreen extends Phaser.Scene {
         enemyBulletsLeftDirection = this.physics.add.group({
             defaultKey: 'enemyBulletLeft',
             maxSize: 1000
+        });
+
+
+        this.physics.world.setBoundsCollision(true, true, true, true);
+
+        this.physics.world.on("worldbounds", function (body) {
+            if (body) {
+                if (body.gameObject.texture.key === 'alien') {
+                    if ((config.height - body.position.y) <= body.height) {
+                        body.x += 10;
+                    }
+                }
+            }
         });
 
         this.physics.add.overlap(
@@ -131,7 +146,7 @@ class GameScreen extends Phaser.Scene {
             player.x = pointer.x;
         });
 
-        // when clicking, shoot
+        // when clicking, player shoot
         this.input.on('pointerdown', this.playerShoot, this);
 
         // 2% chance of shooting an enemy bullet
@@ -147,6 +162,11 @@ class GameScreen extends Phaser.Scene {
                 }
             }
         }.bind(this));
+
+        // move down aliens
+        aliens.getChildren().forEach(function (alien) {
+            alien.body.y += 0.2;
+        });
     }
 
     playerShoot() {
@@ -155,6 +175,7 @@ class GameScreen extends Phaser.Scene {
             bullet.setActive(true);
             bullet.setVisible(true);
             bullet.body.velocity.y = -400;
+            bullet.reset(player.x, player.y + 2); // offset so the bullets can be created in the same place
         }
     }
 
@@ -191,7 +212,7 @@ class GameOverScreen extends Phaser.Scene {
 
     create() {
         this.add.text(340, 250, 'game over');
-        
+
         let tryAgain = this.add.text(300, 300, 'click here to try again');
         tryAgain.setInteractive().on('pointerdown', function () {
             this.scene.scene.start('GameScreen');
