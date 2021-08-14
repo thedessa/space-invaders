@@ -5,8 +5,15 @@ class StartScreen extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('starfield', 'assets/starfield.png');
         this.load.image('logo', 'assets/logo.png');
+        this.load.image('starfield', 'assets/starfield.png');
+        this.load.image('starfield-2', 'assets/starfield-2.webp');
+        this.load.image('player', 'assets/spaceship.png');
+        this.load.image('alien', 'assets/alien.png');
+        this.load.image('alien-green', 'assets/alien-green.png');
+        this.load.image("bullet", "assets/bullet.png");
+        this.load.image("enemyBulletRight", "assets/enemy-bullet-right.png");
+        this.load.image("enemyBulletLeft", "assets/enemy-bullet-left.png");
     }
 
     create() {
@@ -34,14 +41,7 @@ class GameScreen extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('starfield', 'assets/starfield.png');
-        this.load.image('starfield-2', 'assets/starfield-2.webp');
-        this.load.image('player', 'assets/spaceship.png');
-        this.load.image('alien', 'assets/alien.png');
-        this.load.image('alien-green', 'assets/alien-green.png');
-        this.load.image("bullet", "assets/bullet.png");
-        this.load.image("enemyBulletRight", "assets/enemy-bullet-right.png");
-        this.load.image("enemyBulletLeft", "assets/enemy-bullet-left.png");
+
     }
 
     create() {
@@ -53,7 +53,6 @@ class GameScreen extends Phaser.Scene {
             starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield-2");
         }
         
-
         // add cursor to track player actions
         cursor = this.input.keyboard.createCursorKeys();
 
