@@ -14,7 +14,7 @@ class StartScreen extends Phaser.Scene {
         starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
         this.add.image(400, 300, "logo");
 
-        let startGame = this.add.text(350, 550, 'start game');
+        let startGame = this.add.text(350, 550, 'click here to start the game');
         startGame.setInteractive().on('pointerdown', function () {
             // when clicking "start game" text, change the scene
             this.scene.scene.start('GameScreen');
@@ -56,8 +56,8 @@ class GameScreen extends Phaser.Scene {
         player.body.collideWorldBounds = true;
 
         aliens = this.physics.add.group();
-        for (let y = 2; y < 6; y++) {
-            for (let x = 3; x < 13; x++) {
+        for (let y = 2; y < 5; y++) { // 6
+            for (let x = 3; x < 5; x++) { // 13
                 let alienType = x % 2 == 0 ? 'alien' : 'alien-green';
                 aliens.create(x * 50, y * 50, alienType);
             }
@@ -65,7 +65,7 @@ class GameScreen extends Phaser.Scene {
 
         score = this.add.text(10, 10, SCORE_TEXT + playerScore);
         level = this.add.text(700, 10, LEVEL_TEXT + playerLevel);
-        
+
         textLevelHard = "";
         textStartLevelHard = "";
 
@@ -117,11 +117,35 @@ class GameScreen extends Phaser.Scene {
             this.gameOver,
             null,
             this);
+
+        this.physics.add.overlap(
+            playerBullets,
+            enemyBulletsRightDirection,
+            this.killEnemyBullets,
+            null,
+            this);
+
+        this.physics.add.overlap(
+            playerBullets,
+            enemyBulletsLeftDirection,
+            this.killEnemyBullets,
+            null,
+            this);
     }
 
     gameOver() {
         playerScore = 0;
         this.scene.start('GameOverScreen');
+    }
+
+    killEnemyBullets(playerBullet, enemyBullet) {
+        if (playerBullet.active && enemyBullet.active) {
+            playerScore += 20;
+            score.text = SCORE_TEXT + playerScore;
+        }
+
+        enemyBullet.destroy();
+        playerBullet.destroy();
     }
 
     update() {
@@ -162,34 +186,28 @@ class GameScreen extends Phaser.Scene {
 
         // move down aliens
         aliens.getChildren().forEach(function (alien) {
-            let random = Phaser.Math.Between(2, 4);
-            if (level === difficulties.EASY) {
-                alien.body.y += EASY_DIFFULTY_ALIEN_VELOCITY;
+            if (level === difficulties.LEVEL_1) {
+                alien.body.y += LEVEL_1_ALIEN_VELOCITY;
             } else {
-                alien.body.y += HARD_DIFFULTY_ALIEN_VELOCITY;
+                alien.body.y += LEVEL_2_ALIEN_VELOCITY;
             }
-
         });
 
-        if (playerScore === 400) {
-            this.passLevel();
+        if (aliens.getChildren().length === 0) {
+            this.nextLevelOrWin();
         }
     }
 
-    passLevel() {
-        enemyBulletsRightDirection.getChildren().forEach(function (bullet) {
-            bullet.body.moves = false;
-        });
-        enemyBulletsLeftDirection.getChildren().forEach(function (bullet) {
-            bullet.body.moves = false;
-        });
+    nextLevelOrWin() {
+        playerScore = 0;
+        if (playerLevel === difficulties.LEVEL_1) {
+            playerLevel = difficulties.LEVEL_2;
+            this.scene.start('NextLevelScreen');
+        } else {
+            playerLevel = difficulties.LEVEL_1;
+            this.scene.start('PlayerWinScreen')
+        }
 
-        let textLevelHard = this.add.text(300, 250, 'you passed to level 2');
-
-        let textStartLevelHard = this.add.text(300, 300, 'start');
-        textStartLevelHard.setInteractive().on('pointerdown', function () {
-            this.scene.scene.start('GameScreen');
-        });
     }
 
     playerShoot() {
@@ -198,7 +216,6 @@ class GameScreen extends Phaser.Scene {
             bullet.setActive(true);
             bullet.setVisible(true);
             bullet.body.velocity.y = -400;
-            bullet.reset(player.x, player.y + 2); // offset so the bullets can be created in the same place
         }
     }
 
@@ -220,6 +237,54 @@ class GameScreen extends Phaser.Scene {
                 enemyBullet.setVelocity(Phaser.Math.Between(-100, -50), Phaser.Math.Between(200, 300));
             }
         }
+    }
+}
+
+class NextLevelScreen extends Phaser.Scene {
+
+    constructor() {
+        super('NextLevelScreen');
+    }
+
+    preload() {
+
+    }
+
+    create() {
+        this.add.text(300, 250, 'you passed to level 2');
+
+        let startNextLevel = this.add.text(300, 300, 'click here to start next level');
+        startNextLevel.setInteractive().on('pointerdown', function () {
+            this.scene.scene.start('GameScreen');
+        });
+    }
+
+    update() {
+
+    }
+}
+
+class PlayerWinScreen extends Phaser.Scene {
+
+    constructor() {
+        super('PlayerWinScreen');
+    }
+
+    preload() {
+
+    }
+
+    create() {
+        this.add.text(300, 250, 'congratz! you are the space invader\'s best! ');
+
+        let startNextLevel = this.add.text(300, 300, 'click here to play again');
+        startNextLevel.setInteractive().on('pointerdown', function () {
+            this.scene.scene.start('GameScreen');
+        });
+    }
+
+    update() {
+
     }
 }
 
@@ -252,7 +317,7 @@ let config = {
     parent: "game", // div id
     width: 800,
     height: 600,
-    scene: [StartScreen, GameScreen, GameOverScreen],
+    scene: [StartScreen, GameScreen, GameOverScreen, NextLevelScreen, PlayerWinScreen],
     physics: {
         default: 'arcade'
     }
@@ -260,13 +325,13 @@ let config = {
 
 let spaceInvaders = new Phaser.Game(config);
 
-const EASY_DIFFULTY_ALIEN_VELOCITY = 0.2;
-const HARD_DIFFULTY_ALIEN_VELOCITY = 0.4;
-const SCORE_TEXT = 'Score : ';
+const LEVEL_1_ALIEN_VELOCITY = 0.2;
+const LEVEL_2_ALIEN_VELOCITY = 0.4;
+const SCORE_TEXT = 'SCORE : ';
 const LEVEL_TEXT = 'LEVEL : ';
 const difficulties = {
-    EASY: 0,
-    HARD: 1
+    LEVEL_1: 1,
+    LEVEL_2: 2
 }
 
 let starfield;
@@ -281,6 +346,6 @@ let enemyBulletsRightDirection;
 let enemyBulletsLeftDirection;
 let gameOver = false;
 let deaths = 0;
-let playerLevel = difficulties.EASY;
+let playerLevel = difficulties.LEVEL_1;
 let textLevelHard = "";
 let textStartLevelHard = "";
