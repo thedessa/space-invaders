@@ -59,13 +59,15 @@ class GameScreen extends Phaser.Scene {
         for (let y = 2; y < 6; y++) {
             for (let x = 3; x < 13; x++) {
                 let alienType = x % 2 == 0 ? 'alien' : 'alien-green';
-                let alien = aliens.create(x * 50, y * 50, alienType);
-                alien.enableBody = true;
-                alien.body.collideWorldBounds = true;
+                aliens.create(x * 50, y * 50, alienType);
             }
         }
 
-        scoreText = this.add.text(10, 10, score + playerScore);
+        score = this.add.text(10, 10, SCORE_TEXT + playerScore);
+        level = this.add.text(700, 10, LEVEL_TEXT + playerLevel);
+        
+        textLevelHard = "";
+        textStartLevelHard = "";
 
         playerBullets = this.physics.add.group({
             defaultKey: 'bullet',
@@ -82,31 +84,25 @@ class GameScreen extends Phaser.Scene {
             maxSize: 1000
         });
 
-
-        this.physics.world.setBoundsCollision(true, true, true, true);
-
-        this.physics.world.on("worldbounds", function (body) {
-            if (body) {
-                if (body.gameObject.texture.key === 'alien') {
-                    if ((config.height - body.position.y) <= body.height) {
-                        body.x += 10;
-                    }
-                }
-            }
-        });
-
         this.physics.add.overlap(
             aliens,
             playerBullets,
             function (alien, bullet) {
                 if (alien.active && bullet.active) {
                     playerScore += 10;
-                    scoreText.text = score + playerScore;
+                    score.text = SCORE_TEXT + playerScore;
                 }
 
                 alien.destroy();
                 bullet.destroy();
             });
+
+        this.physics.add.overlap(
+            player,
+            aliens,
+            this.gameOver,
+            null,
+            this);
 
         this.physics.add.overlap(
             player,
@@ -129,6 +125,7 @@ class GameScreen extends Phaser.Scene {
     }
 
     update() {
+
         // move the starfield to the left
         starfield.tilePositionX += 2;
 
@@ -165,7 +162,33 @@ class GameScreen extends Phaser.Scene {
 
         // move down aliens
         aliens.getChildren().forEach(function (alien) {
-            alien.body.y += 0.2;
+            let random = Phaser.Math.Between(2, 4);
+            if (level === difficulties.EASY) {
+                alien.body.y += EASY_DIFFULTY_ALIEN_VELOCITY;
+            } else {
+                alien.body.y += HARD_DIFFULTY_ALIEN_VELOCITY;
+            }
+
+        });
+
+        if (playerScore === 400) {
+            this.passLevel();
+        }
+    }
+
+    passLevel() {
+        enemyBulletsRightDirection.getChildren().forEach(function (bullet) {
+            bullet.body.moves = false;
+        });
+        enemyBulletsLeftDirection.getChildren().forEach(function (bullet) {
+            bullet.body.moves = false;
+        });
+
+        let textLevelHard = this.add.text(300, 250, 'you passed to level 2');
+
+        let textStartLevelHard = this.add.text(300, 300, 'start');
+        textStartLevelHard.setInteractive().on('pointerdown', function () {
+            this.scene.scene.start('GameScreen');
         });
     }
 
@@ -237,15 +260,27 @@ let config = {
 
 let spaceInvaders = new Phaser.Game(config);
 
-const score = 'Score : ';
+const EASY_DIFFULTY_ALIEN_VELOCITY = 0.2;
+const HARD_DIFFULTY_ALIEN_VELOCITY = 0.4;
+const SCORE_TEXT = 'Score : ';
+const LEVEL_TEXT = 'LEVEL : ';
+const difficulties = {
+    EASY: 0,
+    HARD: 1
+}
+
 let starfield;
 let cursor;
 let player;
 let aliens;
 let playerBullets;
-let scoreText;
+let score;
+let level;
 let playerScore = 0;
 let enemyBulletsRightDirection;
 let enemyBulletsLeftDirection;
 let gameOver = false;
 let deaths = 0;
+let playerLevel = difficulties.EASY;
+let textLevelHard = "";
+let textStartLevelHard = "";
