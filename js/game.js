@@ -11,10 +11,10 @@ class StartScreen extends Phaser.Scene {
 
     create() {
 
-        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+        starfield = this.add.tileSprite(350, 300, config.width, config.height, "starfield");
         this.add.image(400, 300, "logo");
 
-        let startGame = this.add.text(350, 550, 'click here to start the game');
+        let startGame = this.add.text(270, 500, 'click here to start the game');
         startGame.setInteractive().on('pointerdown', function () {
             // when clicking "start game" text, change the scene
             this.scene.scene.start('GameScreen');
@@ -22,8 +22,8 @@ class StartScreen extends Phaser.Scene {
     }
 
     update() {
-        // move the starfield to the left
-        starfield.tilePositionX += 2;
+        // move the starfield down
+        starfield.tilePositionY += 2;
     }
 }
 
@@ -35,6 +35,7 @@ class GameScreen extends Phaser.Scene {
 
     preload() {
         this.load.image('starfield', 'assets/starfield.png');
+        this.load.image('starfield-2', 'assets/starfield-2.webp');
         this.load.image('player', 'assets/spaceship.png');
         this.load.image('alien', 'assets/alien.png');
         this.load.image('alien-green', 'assets/alien-green.png');
@@ -46,7 +47,12 @@ class GameScreen extends Phaser.Scene {
     create() {
 
         // add starfield
-        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+        if (playerLevel === difficulties.LEVEL_1) {
+            starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+        } else {
+            starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield-2");
+        }
+        
 
         // add cursor to track player actions
         cursor = this.input.keyboard.createCursorKeys();
@@ -151,7 +157,7 @@ class GameScreen extends Phaser.Scene {
     update() {
 
         // move the starfield to the left
-        starfield.tilePositionX += 2;
+        starfield.tilePositionY += 2;
 
         // player can move to the left and to the right
         if (cursor.left.isDown) {
@@ -199,11 +205,11 @@ class GameScreen extends Phaser.Scene {
     }
 
     nextLevelOrWin() {
-        playerScore = 0;
         if (playerLevel === difficulties.LEVEL_1) {
             playerLevel = difficulties.LEVEL_2;
             this.scene.start('NextLevelScreen');
         } else {
+            playerScore = 0;
             playerLevel = difficulties.LEVEL_1;
             this.scene.start('PlayerWinScreen')
         }
@@ -251,16 +257,19 @@ class NextLevelScreen extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(300, 250, 'you passed to level 2');
 
-        let startNextLevel = this.add.text(300, 300, 'click here to start next level');
+        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
+
+        this.add.text(280, 250, 'you passed to level 2');
+
+        let startNextLevel = this.add.text(250, 300, 'click here to start next level');
         startNextLevel.setInteractive().on('pointerdown', function () {
             this.scene.scene.start('GameScreen');
         });
     }
 
     update() {
-
+        starfield.tilePositionY += 2;
     }
 }
 
@@ -275,16 +284,17 @@ class PlayerWinScreen extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(300, 250, 'congratz! you are the space invader\'s best! ');
+        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield-2");
+        this.add.text(200, 250, 'congratz! you are the space invader\'s best! ');
 
-        let startNextLevel = this.add.text(300, 300, 'click here to play again');
+        let startNextLevel = this.add.text(270, 300, 'click here to play again');
         startNextLevel.setInteractive().on('pointerdown', function () {
             this.scene.scene.start('GameScreen');
         });
     }
 
     update() {
-
+        starfield.tilePositionY += 2;
     }
 }
 
@@ -299,16 +309,17 @@ class GameOverScreen extends Phaser.Scene {
     }
 
     create() {
+        starfield = this.add.tileSprite(400, 300, config.width, config.height, "starfield");
         this.add.text(340, 250, 'game over');
 
-        let tryAgain = this.add.text(300, 300, 'click here to try again');
+        let tryAgain = this.add.text(280, 300, 'click here to try again');
         tryAgain.setInteractive().on('pointerdown', function () {
             this.scene.scene.start('GameScreen');
         });
     }
 
     update() {
-
+        starfield.tilePositionY += 2;
     }
 }
 
