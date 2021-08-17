@@ -61,14 +61,15 @@ class GameScreen extends Phaser.Scene {
         player.body.collideWorldBounds = true;
 
         aliens = this.physics.add.group();
-        for (let y = 2; y < 5; y++) { // 6
-            for (let x = 3; x < 5; x++) { // 13
+        for (let y = 2; y < 6; y++) {
+            for (let x = 3; x < 13; x++) {
                 let alienType = x % 2 == 0 ? 'alien' : 'alien-green';
                 aliens.create(x * 50, y * 50, alienType);
             }
         }
 
         score = this.add.text(10, 10, SCORE_TEXT + playerScore);
+        death = this.add.text(10, 30, DEATH_TEXT + deaths);
         level = this.add.text(700, 10, LEVEL_TEXT + playerLevel);
 
         textLevelHard = "";
@@ -138,9 +139,20 @@ class GameScreen extends Phaser.Scene {
             this);
     }
 
-    gameOver() {
-        playerScore = 0;
-        this.scene.start('GameOverScreen');
+    gameOver(player, enemy) {
+        if (enemy.active) {
+            deaths +=1;
+            death.text = DEATH_TEXT + deaths;
+        }
+
+        enemy.destroy();
+
+        if (deaths > 3) {
+            deaths = 0;
+            playerScore = 0;
+            this.scene.start('GameOverScreen');
+        }
+        
     }
 
     killEnemyBullets(playerBullet, enemyBullet) {
@@ -208,7 +220,9 @@ class GameScreen extends Phaser.Scene {
             playerLevel = difficulties.LEVEL_2;
             this.scene.start('NextLevelScreen');
         } else {
+            // start again
             playerScore = 0;
+            deaths = 0;
             playerLevel = difficulties.LEVEL_1;
             this.scene.start('PlayerWinScreen')
         }
@@ -220,7 +234,7 @@ class GameScreen extends Phaser.Scene {
         if (bullet) {
             bullet.setActive(true);
             bullet.setVisible(true);
-            bullet.body.velocity.y = -400;
+            bullet.body.velocity.y = -600;
         }
     }
 
@@ -335,10 +349,11 @@ let config = {
 
 let spaceInvaders = new Phaser.Game(config);
 
-const LEVEL_1_ALIEN_VELOCITY = 0.2;
-const LEVEL_2_ALIEN_VELOCITY = 0.4;
+const LEVEL_1_ALIEN_VELOCITY = 0.05;
+const LEVEL_2_ALIEN_VELOCITY = 0.2;
 const SCORE_TEXT = 'SCORE : ';
 const LEVEL_TEXT = 'LEVEL : ';
+const DEATH_TEXT = 'DEATHS (max 3) : ';
 const difficulties = {
     LEVEL_1: 1,
     LEVEL_2: 2
@@ -350,11 +365,11 @@ let player;
 let aliens;
 let playerBullets;
 let score;
+let death;
 let level;
 let playerScore = 0;
 let enemyBulletsRightDirection;
 let enemyBulletsLeftDirection;
-let gameOver = false;
 let deaths = 0;
 let playerLevel = difficulties.LEVEL_1;
 let textLevelHard = "";
