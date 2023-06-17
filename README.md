@@ -11,7 +11,7 @@ browser-sync start --server --files "."
 
 This will open your default browser at ```localhost:3000```.  
 
-### Some code, articles and tutorials that helped to build this game:
+#### Some code, articles and tutorials that helped to build this game:
 * [Setting up a project to build a JavaScript game with Phaser](https://flaviocopes.com/phaser-setup/)
 * [Invaders game built with Phaser 2](https://phaser.io/examples/v2/games/invaders)
 * [Learn JavaScript with Space Invaders](https://www.codeproject.com/Articles/681130/Learn-JavaScript-Part-2-Space-Invaders)
