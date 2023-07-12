@@ -1,9 +1,11 @@
 # Space Invaders
 
-Game build as the final project of _"Web Page Construction II"_ course - 2021.1 IFRS semester
+Game build as the final project of _"Web Page Construction II"_ course - 2021.1 IFRS semester.
+
+![space_invaders_sample](https://github.com/thedessa/space-invaders/assets/40365555/91dbea66-31d0-4c32-a698-623f8ea6e2df)
 
 This game is built with Phaser 3.
-To run this game you must have a server.  
+To run this game a server is needed. 
 An easy option is to use the [browser-sync](https://www.npmjs.com/package/browser-sync) npm package.
 
 ```bash
@@ -11,7 +13,7 @@ npm install -g browser-sync
 browser-sync start --server --files "."
 ```
 
-This will open your default browser at ```localhost:3000```.  
+This will open the default browser at ```localhost:3000```.
 
 #### Some code, articles, and tutorials that helped to build this game:
 * [Setting up a project to build a JavaScript game with Phaser](https://flaviocopes.com/phaser-setup/)
